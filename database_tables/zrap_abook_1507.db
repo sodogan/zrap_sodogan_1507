@@ -1,0 +1,23 @@
+@EndUserText.label : 'Booking table'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zrap_abook_1507 {
+  key client       : mandt not null;
+  key booking_uuid : sysuuid_x16 not null;
+  travel_uuid      : sysuuid_x16 not null;
+  booking_id       : abap.numc(4) not null;
+  booking_date     : abap.dats;
+  customer_id      : abap.numc(6);
+  carrier_id       : abap.char(3);
+  connection_id    : abap.numc(4);
+  flight_date      : abap.dats;
+  @Semantics.amount.currencyCode : 'zrap_abook_1507.currency_code'
+  flight_price     : abap.curr(16,2);
+  currency_code    : abap.cuky;
+  created_by       : syuname;
+  last_changed_by  : syuname;
+  last_changed_at  : timestampl;
+
+}

@@ -1,0 +1,90 @@
+CLASS zcl_rap_data_generator DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    TYPES:
+*      tt_agencies TYPE STANDARD TABLE OF zi_rapsodogan_agency WITH DEFAULT KEY,
+      tt_travels  TYPE STANDARD TABLE OF zrap_atrav_1507 WITH DEFAULT KEY,
+      tt_bookings TYPE STANDARD TABLE OF zrap_abook_1507 WITH DEFAULT KEY.
+
+    INTERFACES if_oo_adt_classrun .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_rap_data_generator IMPLEMENTATION.
+
+
+  METHOD if_oo_adt_classrun~main.
+
+**First clear the data.
+
+    DELETE FROM zrap_atrav_1507.
+    DELETE FROM zrap_abook_1507.
+
+**Need to insert data for Agency then to Travel
+*    DATA(lt_agencies) =    VALUE tt_agencies(
+*    ( agency_id = 10   name = |Sunshine Travel|  street = |134 West Street| postal_code = |54323|  city = |Rochester|  country_code = |US|
+*     phone_number = |+1 901-632-5620|  email_address = |info@sunshine-travel.sap| web_address = |http://www.sunshine-travel.sap|
+*    )
+*
+*    ).
+*    INSERT  zrap_atrav_1507 FROM TABLE @lt_agencies.
+
+
+    GET TIME STAMP FIELD  DATA(lv_timestamp).
+    DATA(lv_travel_guid) =  cl_system_uuid=>create_uuid_x16_static(  ).
+**Need to insert data for Agency then to Travel
+    DATA(lt_travels) =    VALUE tt_travels(
+    (  travel_uuid = lv_travel_guid
+       travel_id = 1
+       agency_id = 10
+       customer_id = 200
+       description = 'Test Travel'
+       overall_status = 'P'
+       begin_date = cl_abap_context_info=>get_system_date( )
+       end_date = cl_abap_context_info=>get_system_date(  )
+       booking_fee = 12
+       total_price =  2300
+       currency_code = |USD|
+       created_by =  sy-uname
+       created_at = lv_timestamp
+       last_changed_by = sy-uname
+       last_changed_at = lv_timestamp
+    )
+       ).
+
+
+
+    INSERT  zrap_atrav_1507 FROM TABLE @lt_travels.
+
+
+
+    DATA(lt_bookings) =    VALUE tt_bookings(
+    (
+     booking_uuid =  cl_system_uuid=>create_uuid_x16_static(  )
+     travel_uuid = lv_travel_guid
+     booking_id = 100
+     currency_code = |USD|
+     customer_id = 200
+     carrier_id = 'AA'
+     connection_id = '0010'
+     flight_date = cl_abap_context_info=>get_system_date( )
+     flight_price = 123
+     booking_date = cl_abap_context_info=>get_system_date( )
+     created_by =  sy-uname
+     last_changed_at = lv_timestamp
+    )
+    ).
+
+    INSERT  zrap_abook_1507  FROM TABLE @lt_bookings.
+
+    out->write( |Inserted 1 record successfully| ).
+
+
+  ENDMETHOD.
+ENDCLASS.
